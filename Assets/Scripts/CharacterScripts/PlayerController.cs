@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
             movement.y = Input.GetAxisRaw("Vertical");
 
             //prevents diagonal movement
-            if (movement.x != 0) movement.y = 0;
+            //if (movement.x != 0) movement.y = 0;
 
             //find the next target position when a player attempts to move
             if (movement != Vector2.zero)
