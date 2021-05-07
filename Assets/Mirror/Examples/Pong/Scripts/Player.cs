@@ -16,18 +16,22 @@ namespace Mirror.Examples.Pong
             {
                 rigidbody2d.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")) * speed * Time.fixedDeltaTime;
             }
-            //rigidbody2d.velocity = new Vector2(0, Input.GetAxisRaw("Vertical")) * speed * Time.fixedDeltaTime;
         }
         private void Update()
         {
-            if (Input.GetKeyDown("space"))
+            rigidbody2d.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            if (isLocalPlayer)
             {
-                rigidbody2d.transform.localScale = new Vector3(2, 2, 1);
+                if (Input.GetKeyDown("space"))
+                {
+                    rigidbody2d.transform.localScale = new Vector3(2, 2, 1);
+                }
+                if (Input.GetKeyDown("tab"))
+                {
+                    rigidbody2d.transform.localScale = new Vector3(1, 1, 1);
+                }
             }
-            if (Input.GetKeyDown("tab"))
-            {
-                rigidbody2d.transform.localScale = new Vector3(1, 1, 1);
-            }
+
         }
     }
 }
