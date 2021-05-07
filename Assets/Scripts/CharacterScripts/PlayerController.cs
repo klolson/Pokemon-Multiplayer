@@ -1,50 +1,57 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
 
     public float moveSpeed;
     //public VectorValue startingPosition;
 
     private Character character;
+    //private Animator anim;
 
     private Vector2 movement;
 
     private void Awake()
     {
         character = GetComponent<Character>();
+        //anim = GetComponent<Animator>();
         //transform.position = startingPosition.initialValue;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (!character.IsMoving)
+        if (isLocalPlayer)
         {
-            // Input
-            movement.x = Input.GetAxisRaw("Horizontal");
-            movement.y = Input.GetAxisRaw("Vertical");
+            if (!character.IsMoving)
+            {
+                // Input
+                movement.x = Input.GetAxisRaw("Horizontal");
+                movement.y = Input.GetAxisRaw("Vertical");
 
             //prevents diagonal movement
             //if (movement.x != 0) movement.y = 0;
 
-            //find the next target position when a player attempts to move
-            if (movement != Vector2.zero)
+                //find the next target position when a player attempts to move
+                if (movement != Vector2.zero)
+                {
+                    //makes sure an area is walkable before allowing a player move
+                    StartCoroutine(character.Move(movement, OnMoveOver));
+                }
+            }
+
+            character.HandleUpdate();
+
+            if (Input.GetKeyDown(KeyCode.Z))
             {
-                //makes sure an area is walkable before allowing a player move
-                StartCoroutine(character.Move(movement, OnMoveOver));
+                Debug.Log("Pressed Z in the player controller");
+                Interact();
             }
         }
-
-        character.HandleUpdate();
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            Debug.Log("Pressed Z in the player controller");
-            Interact();
-        }
+        //anim.SetBool("StartWalk", true);
     }
 
     private void Interact()
