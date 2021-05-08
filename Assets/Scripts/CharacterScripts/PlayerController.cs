@@ -1,9 +1,8 @@
-using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : NetworkBehaviour
+public class PlayerController : MonoBehaviour
 {
 
     public float moveSpeed;
@@ -25,7 +24,6 @@ public class PlayerController : NetworkBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (isLocalPlayer)
         {
             if (!isMoving)
             {
@@ -48,7 +46,20 @@ public class PlayerController : NetworkBehaviour
 
                     StartCoroutine(Move(targetPos));
                 }
+            // Input
+            movement.x = Input.GetAxisRaw("Horizontal");
+            movement.y = Input.GetAxisRaw("Vertical");
+
+            //prevents diagonal movement
+            //if (movement.x != 0) movement.y = 0;
+
+            //find the next target position when a player attempts to move
+            if (movement != Vector2.zero)
+            {
+                //makes sure an area is walkable before allowing a player move
+                StartCoroutine(character.Move(movement, OnMoveOver));
             }
+        }
 
             animator.SetBool("Moving", isMoving);
             //character.HandleUpdate();
@@ -58,8 +69,13 @@ public class PlayerController : NetworkBehaviour
                 Debug.Log("Pressed Z in the player controller");
                 //Interact();
             }
+        character.HandleUpdate();
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Debug.Log("Pressed Z in the player controller");
+            Interact();
         }
-        //anim.SetBool("StartWalk", true);
     }
 
     IEnumerator Move(Vector3 targetPos)
