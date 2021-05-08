@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -14,10 +15,16 @@ public class PlayerController : NetworkBehaviour
 
     private Vector2 movement;
     private bool isMoving;
+    public int health = 4;
+    public Slider healthbar;
+    private bool takeDamage;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        healthbar.maxValue = 4;
+        healthbar.minValue = 4;
+        healthbar.value = 4;
         //character = GetComponent<Character>();
         //transform.position = startingPosition.initialValue;
     }
@@ -59,7 +66,19 @@ public class PlayerController : NetworkBehaviour
                 //Interact();
             }
         }
+
+        if (isLocalPlayer)
+        {
+            if (takeDamage)
+            {
+                takeDamage = false;
+                healthbar.value--;
+                if (healthbar.value == 0) Debug.Log("No health left.");
+            }
+        }
     }
+
+
 
     IEnumerator Move(Vector3 targetPos)
     {
