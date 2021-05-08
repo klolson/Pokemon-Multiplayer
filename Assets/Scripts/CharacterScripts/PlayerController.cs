@@ -9,15 +9,16 @@ public class PlayerController : NetworkBehaviour
     public float moveSpeed;
     //public VectorValue startingPosition;
 
-    private Character character;
-    //private Animator anim;
+    //private Character character;
+    private Animator animator;
 
     private Vector2 movement;
+    private bool isMoving;
 
     private void Awake()
     {
-        character = GetComponent<Character>();
-        //anim = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
+        //character = GetComponent<Character>();
         //transform.position = startingPosition.initialValue;
     }
 
@@ -26,38 +27,59 @@ public class PlayerController : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            if (!character.IsMoving)
+            if (!isMoving)
             {
                 // Input
                 movement.x = Input.GetAxisRaw("Horizontal");
                 movement.y = Input.GetAxisRaw("Vertical");
 
-            //prevents diagonal movement
-            //if (movement.x != 0) movement.y = 0;
-
                 //find the next target position when a player attempts to move
                 if (movement != Vector2.zero)
                 {
+                    Debug.Log("Movement X: " + movement.x);
+                    animator.SetFloat("MoveX", movement.x);
+                    animator.SetFloat("MoveY", movement.y);
+
                     //makes sure an area is walkable before allowing a player move
-                    StartCoroutine(character.Move(movement, OnMoveOver));
+                    //StartCoroutine(character.Move(movement, OnMoveOver));
+                    var targetPos = transform.position;
+                    targetPos.x += movement.x;
+                    targetPos.y += movement.y;
+
+                    StartCoroutine(Move(targetPos));
                 }
             }
 
-            character.HandleUpdate();
+            animator.SetBool("Moving", isMoving);
+            //character.HandleUpdate();
 
             if (Input.GetKeyDown(KeyCode.Z))
             {
                 Debug.Log("Pressed Z in the player controller");
-                Interact();
+                //Interact();
             }
         }
         //anim.SetBool("StartWalk", true);
     }
 
+    IEnumerator Move(Vector3 targetPos)
+    {
+        isMoving = true;
+
+        while ((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        transform.position = targetPos;
+
+        isMoving = false;
+    }
+
     private void Interact()
     {
-        var faceDir = new Vector3(character.Animator.MoveX, character.Animator.MoveY);
-        var interactPos = transform.position + faceDir;
+        //var faceDir = new Vector3(character.Animator.MoveX, character.Animator.MoveY);
+        //var interactPos = transform.position + faceDir;
 
         /*
         var collider = Physics2D.OverlapCircle(interactPos, 0.3f, GameplayLayers.i.InteractLayer);
