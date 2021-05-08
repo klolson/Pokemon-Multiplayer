@@ -1,57 +1,50 @@
-using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : NetworkBehaviour
+public class PlayerController : MonoBehaviour
 {
 
     public float moveSpeed;
     //public VectorValue startingPosition;
 
     private Character character;
-    //private Animator anim;
 
     private Vector2 movement;
 
     private void Awake()
     {
         character = GetComponent<Character>();
-        //anim = GetComponent<Animator>();
         //transform.position = startingPosition.initialValue;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (isLocalPlayer)
+        if (!character.IsMoving)
         {
-            if (!character.IsMoving)
-            {
-                // Input
-                movement.x = Input.GetAxisRaw("Horizontal");
-                movement.y = Input.GetAxisRaw("Vertical");
+            // Input
+            movement.x = Input.GetAxisRaw("Horizontal");
+            movement.y = Input.GetAxisRaw("Vertical");
 
             //prevents diagonal movement
             //if (movement.x != 0) movement.y = 0;
 
-                //find the next target position when a player attempts to move
-                if (movement != Vector2.zero)
-                {
-                    //makes sure an area is walkable before allowing a player move
-                    StartCoroutine(character.Move(movement, OnMoveOver));
-                }
-            }
-
-            character.HandleUpdate();
-
-            if (Input.GetKeyDown(KeyCode.Z))
+            //find the next target position when a player attempts to move
+            if (movement != Vector2.zero)
             {
-                Debug.Log("Pressed Z in the player controller");
-                Interact();
+                //makes sure an area is walkable before allowing a player move
+                StartCoroutine(character.Move(movement, OnMoveOver));
             }
         }
-        //anim.SetBool("StartWalk", true);
+
+        character.HandleUpdate();
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Debug.Log("Pressed Z in the player controller");
+            Interact();
+        }
     }
 
     private void Interact()

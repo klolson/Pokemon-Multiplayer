@@ -10,10 +10,6 @@ public class CharacterAnimator : MonoBehaviour
     [SerializeField] List<Sprite> walkUpSprites;
     [SerializeField] List<Sprite> walkRightSprites;
     [SerializeField] List<Sprite> walkLeftSprites;
-    [SerializeField] List<Sprite> walkDiagonalUpLeftSprites;
-    [SerializeField] List<Sprite> WalkDiagonalUpRightSprites;
-    [SerializeField] List<Sprite> walkDiagonalDownLeftSprites;
-    [SerializeField] List<Sprite> walkDiagonalDownRightSprites;
 
     // Parameters
     public float MoveX { get; set; }
@@ -25,10 +21,6 @@ public class CharacterAnimator : MonoBehaviour
     SpriteAnimator walkUpAnim;
     SpriteAnimator walkRightAnim;
     SpriteAnimator walkLeftAnim;
-    SpriteAnimator walkDiagonalUpLeftAnim;
-    SpriteAnimator WalkDiagonalUpRightAnim;
-    SpriteAnimator walkDiagonalDownLeftAnim;
-    SpriteAnimator walkDiagonalDownRightAnim;
 
     SpriteAnimator currentAnim;
     bool wasPreviouslyMoving;
@@ -43,10 +35,7 @@ public class CharacterAnimator : MonoBehaviour
         walkUpAnim = new SpriteAnimator(walkUpSprites, spriteRenderer);
         walkRightAnim = new SpriteAnimator(walkRightSprites, spriteRenderer);
         walkLeftAnim = new SpriteAnimator(walkLeftSprites, spriteRenderer);
-        walkDiagonalUpLeftAnim = new SpriteAnimator(walkDiagonalUpLeftSprites, spriteRenderer);
-        WalkDiagonalUpRightAnim = new SpriteAnimator(WalkDiagonalUpRightSprites, spriteRenderer);
-        walkDiagonalDownLeftAnim = new SpriteAnimator(walkDiagonalDownLeftSprites, spriteRenderer);
-        walkDiagonalDownRightAnim = new SpriteAnimator(walkDiagonalDownRightSprites, spriteRenderer);
+
 
         switch (defaultPos)
         {
@@ -73,24 +62,16 @@ public class CharacterAnimator : MonoBehaviour
     {
         var prevAnim = currentAnim;
 
-        if (MoveX == 1 && MoveY == 0)
+        if (MoveX == 1)
         {
             currentAnim = walkRightAnim;
         }
-        else if (MoveX == -1 && MoveY == 0)
+        else if (MoveX == -1)
             currentAnim = walkLeftAnim;
-        else if (MoveY == 1 && MoveX == 0)
+        else if (MoveY == 1)
             currentAnim = walkUpAnim;
-        else if (MoveY == -1 && MoveX == 0)
+        else if (MoveY == -1)
             currentAnim = walkDownAnim;
-        else if (MoveX == -1 && MoveY == -1)
-            currentAnim = walkDiagonalDownLeftAnim;
-        else if (MoveX == -1 && MoveY == 1)
-            currentAnim = walkDiagonalUpLeftAnim;
-        else if (MoveX == 1 && MoveY == -1)
-            currentAnim = walkDiagonalDownRightAnim;
-        else if (MoveX == 1 && MoveY == 1)
-            currentAnim = WalkDiagonalUpRightAnim;
 
         if (currentAnim != prevAnim || IsMoving != wasPreviouslyMoving)
             currentAnim.Start();
