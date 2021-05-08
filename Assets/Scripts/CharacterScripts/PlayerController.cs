@@ -16,12 +16,14 @@ public class PlayerController : NetworkBehaviour
     private Vector2 movement;
     private bool isMoving;
     public int health = 4;
-    public Slider healthbar;
+    private Slider healthbar;
     private bool takeDamage;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        healthbar = GetComponent<Slider>();
+        healthbar = GetComponentInChildren<Canvas>().GetComponentInChildren<Slider>();
         healthbar.maxValue = 4;
         healthbar.minValue = 4;
         healthbar.value = 4;
@@ -34,6 +36,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
+            Debug.Log("Test");
             if (!isMoving)
             {
                 // Input
