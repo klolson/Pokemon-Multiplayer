@@ -16,8 +16,9 @@ public class PlayerController : NetworkBehaviour
     private Vector2 movement;
     private bool isMoving;
     public int health = 4;
-    private Slider healthbar;
+    public Slider healthbar;
     private bool takeDamage;
+    public Text playerName;
 
     private void Awake()
     {
@@ -34,6 +35,11 @@ public class PlayerController : NetworkBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (isLocalPlayer)
+        {
+            playerName.text = "Charmander";
+        }
+
         if (isLocalPlayer)
         {
             Debug.Log("Test");
