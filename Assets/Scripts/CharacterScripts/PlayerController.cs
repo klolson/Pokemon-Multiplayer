@@ -24,6 +24,8 @@ public class PlayerController : NetworkBehaviour
     public float attackRange = 1.0f;
     public LayerMask enemyLayers;
 
+    public GameObject vCamera;
+
     void DoAttack()
     {
         animator.SetTrigger("Attack");
@@ -53,6 +55,13 @@ public class PlayerController : NetworkBehaviour
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 
+    public override void OnStartClient()
+    {
+        if (!isLocalPlayer)
+        {
+            vCamera.SetActive(false);
+        }
+    }
 
     private void Awake()
     {
