@@ -41,14 +41,11 @@ public class PlayerController : NetworkBehaviour
             PlayerController e = enemy.GetComponent<PlayerController>();
             if (!e.isLocalPlayer)
             {
-                e.DoDamage();
-                Debug.Log("Attacked " + enemy.name + ". They have " + e.health + " health left.");
                 SendDamage(e.netId);
+                //e.DoDamage();
+                Debug.Log("Attacked " + enemy.name + ". They have " + e.health + " health left.");
             }
-            if (e.health == 0)
-            {
-                e.Respawn();
-            }
+
             /*if (enemy.GetComponent<PlayerController>().isLocalPlayer) enemy.GetComponent<PlayerController>().takeDamage = true;*/
         }
     }
@@ -83,16 +80,16 @@ public class PlayerController : NetworkBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (isLocalPlayer && numDeaths == 0)
+        if (isLocalPlayer)
         {
             playerName.text = "Charmander";
         }
-        else if (isLocalPlayer)
-        {
-            playerName.text = "Charmander" + numDeaths;
-        }
 
-        healthbar.value = health;
+        if (isLocalPlayer && health == 0)
+        {
+            Respawn();
+        }
+        //healthbar.value = health;
 
         if (isLocalPlayer)
         {
@@ -138,19 +135,11 @@ public class PlayerController : NetworkBehaviour
         //playerName.text = "Charmander" + numDeaths;
         numDeaths++;
         health = 4;
-        healthbar.value = health;
+        //healthbar.value = health;
     }
 
     private void DoDamage()
     {
-        takeDamage = false;
-        health--;
-        healthbar.value = health;
-        if (health <= 0)
-        {
-            Debug.Log("No health left.");
-            //StartCoroutine(Respawn(this));
-        }
     }
 
     IEnumerator Move(Vector3 targetPos)
@@ -189,5 +178,6 @@ public class PlayerController : NetworkBehaviour
     {
         var enemy = NetworkIdentity.spawned[id].gameObject;
         enemy.GetComponent<PlayerController>().health--;
+
     }
 }
