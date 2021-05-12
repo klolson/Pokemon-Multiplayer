@@ -160,6 +160,8 @@ public class PlayerController : NetworkBehaviour
         System.Random rnd = new System.Random();
         if (rnd.Next(2) == 1) transform.position = leftRacketSpawn;
         else transform.position = rightRacketSpawn;
+
+        animator.SetTrigger("Respawn");
         //respawn
     }
 
