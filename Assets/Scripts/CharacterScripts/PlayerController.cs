@@ -87,6 +87,7 @@ public class PlayerController : NetworkBehaviour
 
         if (isLocalPlayer && health == 0)
         {
+            animator.SetTrigger("Dead");
             Respawn();
         }
         //healthbar.value = health;
@@ -95,7 +96,7 @@ public class PlayerController : NetworkBehaviour
         {
             healthbar.value = health;
 
-            if (!isMoving)
+            if (!isMoving && health != 0 )
             {
                 // Input
                 movement.x = Input.GetAxisRaw("Horizontal");
