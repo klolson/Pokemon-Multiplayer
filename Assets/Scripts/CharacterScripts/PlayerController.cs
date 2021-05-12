@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class PlayerController : NetworkBehaviour
 {
-
     public float moveSpeed;
     //public VectorValue startingPosition;
 
@@ -15,7 +14,10 @@ public class PlayerController : NetworkBehaviour
 
     private Vector2 movement;
     private bool isMoving;
+
+    [SyncVar]
     public int health = 4;
+
     public Slider healthbar;
     public bool takeDamage;
     public Text playerName;
@@ -41,6 +43,7 @@ public class PlayerController : NetworkBehaviour
             {
                 e.DoDamage();
                 Debug.Log("Attacked " + enemy.name + ". They have " + e.health + " health left.");
+                SendDamage(e.netId);
             }
             if (e.health == 0)
             {
@@ -181,23 +184,10 @@ public class PlayerController : NetworkBehaviour
         return true;
     }
 
-    private void Interact()
+    [Command]
+    void SendDamage(uint id)
     {
-        //var faceDir = new Vector3(character.Animator.MoveX, character.Animator.MoveY);
-        //var interactPos = transform.position + faceDir;
-
-        /*
-        var collider = Physics2D.OverlapCircle(interactPos, 0.3f, GameplayLayers.i.InteractLayer);
-        if (collider != null && GameController.state == GameState.Roam)
-        {
-            Debug.Log("Initiating Dialog");
-            collider.GetComponent<Interactable>()?.Interact(transform);
-        }*/
-    }
-
-    private void OnMoveOver()
-    {
-        //CheckForEncounters();
-        //CheckIfInTrainerView();
+        var enemy = NetworkIdentity.spawned[id].gameObject;
+        enemy.GetComponent<PlayerController>().health--;
     }
 }
