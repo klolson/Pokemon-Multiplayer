@@ -99,7 +99,8 @@ public class PlayerController : NetworkBehaviour
                     targetPos.x += movement.x;
                     targetPos.y += movement.y;
 
-                    StartCoroutine(Move(targetPos));
+                    if (IsPathClear(targetPos))
+                        StartCoroutine(Move(targetPos));
                 }
             }
 
@@ -144,6 +145,23 @@ public class PlayerController : NetworkBehaviour
         transform.position = targetPos;
 
         isMoving = false;
+    }
+
+    private bool IsPathClear(Vector3 targetPosition)
+    {
+        var difference = targetPosition - transform.position;
+        var direction = difference.normalized;
+
+        if (Physics2D.OverlapCircle(targetPosition, 0.3f, enemyLayers) != null)
+        {
+            return false;
+        }
+
+        /*
+        if (Physics2D.BoxCast(transform.position + direction, new Vector2(0.2f, 0.2f), 0f, direction, difference.magnitude - 1, GameplayLayers.i.SolidLayer | GameplayLayers.i.InteractLayer | GameplayLayers.i.PlayerLayer) == true)
+            return false;
+        else*/
+        return true;
     }
 
     private void Interact()
