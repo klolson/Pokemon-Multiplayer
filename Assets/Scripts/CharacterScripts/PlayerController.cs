@@ -26,6 +26,8 @@ public class PlayerController : NetworkBehaviour
 
     void DoAttack()
     {
+        animator.SetTrigger("Attack");
+
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
 
         foreach (Collider2D enemy in hitEnemies)
@@ -90,10 +92,9 @@ public class PlayerController : NetworkBehaviour
             animator.SetBool("Moving", isMoving);
             //character.HandleUpdate();
 
-            if (Input.GetKeyDown(KeyCode.Z))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                //Debug.Log("Pressed Z in the player controller");
-                //Interact();
+                DoAttack();
             }
         }
 
@@ -105,11 +106,6 @@ public class PlayerController : NetworkBehaviour
                 healthbar.value--;
                 if (healthbar.value <= 0) Debug.Log("No health left.");
             }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            DoAttack();
         }
     }
 
