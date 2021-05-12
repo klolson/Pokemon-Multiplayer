@@ -28,11 +28,21 @@ public class PlayerController : NetworkBehaviour
     {
         animator.SetTrigger("Attack");
 
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
 
         foreach (Collider2D enemy in hitEnemies)
         {
-            if (!enemy.GetComponent<PlayerController>().isLocalPlayer) enemy.GetComponent<PlayerController>().takeDamage = true;
+            PlayerController e = enemy.GetComponent<PlayerController>();
+            if (!e.isLocalPlayer)
+            {
+                e.DoDamage();
+                Debug.Log("Attacked " + enemy.name + ". They have " + e.health + " health left.");
+                if (e.health == 0)
+                {
+                    StartCoroutine(e.Respawn());
+                }
+            }
+            /*if (enemy.GetComponent<PlayerController>().isLocalPlayer) enemy.GetComponent<PlayerController>().takeDamage = true;*/
         }
     }
 
@@ -62,6 +72,10 @@ public class PlayerController : NetworkBehaviour
         if (isLocalPlayer)
         {
             playerName.text = "Charmander";
+        }
+        else
+        {
+            playerName.text = "";
         }
 
         if (isLocalPlayer)
@@ -97,19 +111,26 @@ public class PlayerController : NetworkBehaviour
                 DoAttack();
             }
         }
-
-        if (isLocalPlayer)
-        {
-            if (takeDamage)
-            {
-                takeDamage = false;
-                healthbar.value--;
-                if (healthbar.value <= 0) Debug.Log("No health left.");
-            }
-        }
     }
 
+    private IEnumerator Respawn()
+    {
+        playerName.text = "You died.";
+        yield return new WaitForSeconds(2);
+        playerName.text = "Charmander";
+        health = 4;
+    }
 
+    private void DoDamage()
+    {
+        takeDamage = false;
+        health--;
+        if (health <= 0)
+        {
+            Debug.Log("No health left.");
+            //StartCoroutine(Respawn(this));
+        }
+    }
 
     IEnumerator Move(Vector3 targetPos)
     {
