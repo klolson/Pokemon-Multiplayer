@@ -24,6 +24,8 @@ public class PlayerController : NetworkBehaviour
     public float attackRange = 1.0f;
     public LayerMask enemyLayers;
 
+    private int numDeaths = 0;
+
     public GameObject vCamera;
 
     void DoAttack()
@@ -39,10 +41,10 @@ public class PlayerController : NetworkBehaviour
             {
                 e.DoDamage();
                 Debug.Log("Attacked " + enemy.name + ". They have " + e.health + " health left.");
-                if (e.health == 0)
-                {
-                    StartCoroutine(e.Respawn());
-                }
+            }
+            if (e.health == 0)
+            {
+                e.Respawn();
             }
             /*if (enemy.GetComponent<PlayerController>().isLocalPlayer) enemy.GetComponent<PlayerController>().takeDamage = true;*/
         }
@@ -69,7 +71,7 @@ public class PlayerController : NetworkBehaviour
         healthbar = GetComponent<Slider>();
         healthbar = GetComponentInChildren<Canvas>().GetComponentInChildren<Slider>();
         healthbar.maxValue = 4;
-        healthbar.minValue = 4;
+        healthbar.minValue = 0;
         healthbar.value = 4;
         //character = GetComponent<Character>();
         //transform.position = startingPosition.initialValue;
@@ -78,17 +80,21 @@ public class PlayerController : NetworkBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && numDeaths == 0)
         {
             playerName.text = "Charmander";
         }
-        else
+        else if (isLocalPlayer)
         {
-            playerName.text = "";
+            playerName.text = "Charmander" + numDeaths;
         }
+
+        healthbar.value = health;
 
         if (isLocalPlayer)
         {
+            healthbar.value = health;
+
             if (!isMoving)
             {
                 // Input
@@ -123,18 +129,20 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private IEnumerator Respawn()
+    private void Respawn()
     {
-        playerName.text = "You died.";
-        yield return new WaitForSeconds(2);
-        playerName.text = "Charmander";
+        Debug.Log("Respawning....");
+        //playerName.text = "Charmander" + numDeaths;
+        numDeaths++;
         health = 4;
+        healthbar.value = health;
     }
 
     private void DoDamage()
     {
         takeDamage = false;
         health--;
+        healthbar.value = health;
         if (health <= 0)
         {
             Debug.Log("No health left.");
