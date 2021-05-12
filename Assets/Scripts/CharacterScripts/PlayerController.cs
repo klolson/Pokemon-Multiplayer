@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class PlayerController : NetworkBehaviour
 {
+    public Vector3 leftRacketSpawn = new Vector3(-10, 0, 0);
+    public Vector3 rightRacketSpawn = new Vector3(10, 0, 0);
     public float moveSpeed;
     //public VectorValue startingPosition;
 
@@ -29,6 +31,10 @@ public class PlayerController : NetworkBehaviour
     private int numDeaths = 0;
 
     public GameObject vCamera;
+
+    public GameObject respawnUI;
+    public Button respawnButton;
+    public GameObject healthSliderUI;
 
     void DoAttack()
     {
@@ -73,6 +79,7 @@ public class PlayerController : NetworkBehaviour
         healthbar.maxValue = 4;
         healthbar.minValue = 0;
         healthbar.value = 4;
+        respawnUI.SetActive(false);
         //character = GetComponent<Character>();
         //transform.position = startingPosition.initialValue;
     }
@@ -90,7 +97,11 @@ public class PlayerController : NetworkBehaviour
             animator.SetTrigger("Dead");
             Respawn();
         }
-        //healthbar.value = health;
+        if (!isLocalPlayer)
+        {
+            healthSliderUI.SetActive(false);
+            respawnUI.SetActive(false);
+        }
 
         if (isLocalPlayer)
         {
@@ -127,16 +138,29 @@ public class PlayerController : NetworkBehaviour
             {
                 DoAttack();
             }
+            if (Input.GetKeyDown(KeyCode.L) && health == 0)
+            {
+                OnRespawn();
+            }
         }
     }
 
     private void Respawn()
     {
         Debug.Log("Respawning....");
+        respawnUI.SetActive(true);
         //playerName.text = "Charmander" + numDeaths;
-        numDeaths++;
-        health = 4;
+
         //healthbar.value = health;
+    }
+    public void OnRespawn()
+    {
+        respawnUI.SetActive(false);
+        health = 4;
+        System.Random rnd = new System.Random();
+        if (rnd.Next(2) == 1) transform.position = leftRacketSpawn;
+        else transform.position = rightRacketSpawn;
+        //respawn
     }
 
     private void DoDamage()

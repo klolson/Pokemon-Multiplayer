@@ -17,6 +17,15 @@ public class NetworkManagerPokemon : NetworkManager
         GameObject player = Instantiate(playerPrefab, start.position, start.rotation);
         NetworkServer.AddPlayerForConnection(conn, player);
     }
+
+    public void Respawn(GameObject player, NetworkConnection conn)
+    {
+        Destroy(player);
+        Transform start = numPlayers % 2 == 0 ? leftRacketSpawn : rightRacketSpawn;
+        GameObject player2 = Instantiate(playerPrefab, start.position, start.rotation);
+        NetworkServer.AddPlayerForConnection(conn, player2);
+    }
+
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         base.OnServerDisconnect(conn);
