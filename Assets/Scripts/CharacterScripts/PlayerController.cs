@@ -17,8 +17,30 @@ public class PlayerController : NetworkBehaviour
     private bool isMoving;
     public int health = 4;
     public Slider healthbar;
-    private bool takeDamage;
+    public bool takeDamage;
     public Text playerName;
+
+    public Transform attackPoint;
+    public float attackRange = 1.0f;
+    public LayerMask enemyLayers;
+
+    void DoAttack()
+    {
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            if (!enemy.GetComponent<PlayerController>().isLocalPlayer) enemy.GetComponent<PlayerController>().takeDamage = true;
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null) return;
+
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+    }
+
 
     private void Awake()
     {
@@ -42,7 +64,6 @@ public class PlayerController : NetworkBehaviour
 
         if (isLocalPlayer)
         {
-            Debug.Log("Test");
             if (!isMoving)
             {
                 // Input
@@ -52,7 +73,7 @@ public class PlayerController : NetworkBehaviour
                 //find the next target position when a player attempts to move
                 if (movement != Vector2.zero)
                 {
-                    Debug.Log("Movement X: " + movement.x);
+                    //Debug.Log("Movement X: " + movement.x);
                     animator.SetFloat("MoveX", movement.x);
                     animator.SetFloat("MoveY", movement.y);
 
@@ -71,7 +92,7 @@ public class PlayerController : NetworkBehaviour
 
             if (Input.GetKeyDown(KeyCode.Z))
             {
-                Debug.Log("Pressed Z in the player controller");
+                //Debug.Log("Pressed Z in the player controller");
                 //Interact();
             }
         }
@@ -82,8 +103,13 @@ public class PlayerController : NetworkBehaviour
             {
                 takeDamage = false;
                 healthbar.value--;
-                if (healthbar.value == 0) Debug.Log("No health left.");
+                if (healthbar.value <= 0) Debug.Log("No health left.");
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            DoAttack();
         }
     }
 
