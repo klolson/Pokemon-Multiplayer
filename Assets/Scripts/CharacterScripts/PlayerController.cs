@@ -108,7 +108,7 @@ public class PlayerController : NetworkBehaviour
         {
             healthbar.value = health;
 
-            if (!isMoving && health != 0 )
+            if (!isMoving && health > 0 )
             {
                 // Input
                 movement.x = Input.GetAxisRaw("Horizontal");
@@ -136,7 +136,7 @@ public class PlayerController : NetworkBehaviour
             {
                 DoAttack();
             }
-            if (Input.GetKeyDown(KeyCode.L) && health == 0)
+            if (Input.GetKeyDown(KeyCode.L) && health <= 0)
             {
                 OnRespawn();
             }
@@ -154,7 +154,7 @@ public class PlayerController : NetworkBehaviour
     public void OnRespawn()
     {
         respawnUI.SetActive(false);
-        health = 4;
+        SendHealth(this.netId);
         System.Random rnd = new System.Random();
         if (rnd.Next(2) == 1) transform.position = leftRacketSpawn;
         else transform.position = rightRacketSpawn;
@@ -200,5 +200,12 @@ public class PlayerController : NetworkBehaviour
         var enemy = NetworkIdentity.spawned[id].gameObject;
         enemy.GetComponent<PlayerController>().health--;
 
+    }
+
+    [Command]
+    void SendHealth(uint id)
+    {
+        var player = NetworkIdentity.spawned[id].gameObject;
+        player.GetComponent<PlayerController>().health = 4;
     }
 }
