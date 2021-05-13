@@ -100,10 +100,10 @@ public class PlayerController : NetworkBehaviour
         }
         if (!isLocalPlayer)
         {
-            healthSliderUI.SetActive(false);
+            //healthSliderUI.SetActive(false);
             respawnUI.SetActive(false);
         }
-
+        healthbar.value = health;
         if (isLocalPlayer)
         {
             healthbar.value = health;
